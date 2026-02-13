@@ -1,0 +1,265 @@
+Build a web application MVP called PawSync. It is a trainer-led single source of truth system for pet training homework.
+
+Core workflow (must work end-to-end):
+Trainer assigns homework → Owner submits completion with proof → Trainer reviews on a timeline and comments.
+
+Tech Stack (required)
+
+Next.js (App Router)
+
+Pure JavaScript only (NO TypeScript anywhere)
+
+TailwindCSS
+
+PostgreSQL + Prisma ORM
+
+NextAuth (Auth.js) with Google OAuth
+
+Media upload for proof: image/video (simple dev-friendly implementation). Store uploaded files locally in a /public/uploads or similar dev path and store file metadata in the database. Keep it working in Replit.
+
+Non-Functional Requirement (must follow)
+
+Mobile-first responsive UI
+
+Must work well at 360px–430px widths (phone sizes) and scale up to desktop.
+
+No horizontal scrolling on core pages.
+
+Use cards/lists for mobile (avoid tables that overflow).
+
+Large tap targets and readable spacing.
+
+Test with responsive layout assumptions.
+
+Roles (simple)
+
+Two roles: "TRAINER" and "OWNER"
+
+Store role on user record
+
+After first login, if role not set, show a role selection onboarding screen.
+
+Database Models (Prisma)
+
+Create these models:
+
+User
+
+id (string/uuid)
+
+email (unique)
+
+name (optional)
+
+role (string: "TRAINER" or "OWNER", nullable until onboarding)
+
+createdAt
+
+Pet
+
+id
+
+name
+
+species (optional)
+
+ownerId (FK -> User)
+
+trainerId (FK -> User)
+
+createdAt
+
+HomeworkTask
+
+id
+
+petId (FK)
+
+createdByTrainerId (FK -> User)
+
+title
+
+instructions
+
+frequency (string e.g. "daily", "3x/week", "weekly")
+
+expectedDurationMins (int optional)
+
+isActive (boolean default true)
+
+createdAt
+
+HomeworkSubmission
+
+id
+
+taskId (FK)
+
+submittedByUserId (FK -> User)
+
+note (text optional)
+
+submittedAt (datetime)
+
+status (string; MVP use "COMPLETED" only)
+
+createdAt
+
+SubmissionMedia
+
+id
+
+submissionId (FK)
+
+mediaType ("IMAGE" or "VIDEO")
+
+filePath (string)
+
+fileName (optional)
+
+createdAt
+
+TrainerComment
+
+id
+
+submissionId (FK)
+
+trainerId (FK -> User)
+
+comment (text)
+
+createdAt
+
+Pages / Features (Phase 1 ONLY)
+
+Do NOT implement Phase 2 features (feedback form, community chat, meds, grooming automation, external calendar sync, notifications, payments, AI).
+
+Landing / Auth
+
+Landing page with “Sign in with Google”
+
+After login redirect to dashboard
+
+Onboarding (Role Selection)
+
+If role is null, prompt user to select TRAINER or OWNER and save.
+
+Dashboard (mobile-first)
+
+If OWNER: list pets owned by user + button “Add Pet”
+
+If TRAINER: list pets assigned to trainer
+
+Select a pet to open pet workspace
+
+Pet Management
+OWNER can:
+
+Create a pet (name, optional species)
+
+Assign a trainer by entering trainer email (must match an existing user email; if not found show clear error)
+
+TRAINER can:
+
+View assigned pets (read-only)
+
+Homework Tasks
+TRAINER can:
+
+Create homework task for selected pet (title, instructions, frequency, expected duration)
+OWNER can:
+
+View active homework tasks for selected pet
+
+Homework Submission
+OWNER can:
+
+Mark task as completed
+
+Add a short note
+
+Upload optional image or video
+
+Save submission + media metadata
+
+View submission history per task
+
+Timeline / Calendar View (critical)
+Provide a timeline view per pet showing chronological items:
+
+Tasks created (assigned)
+
+Submissions (completed)
+
+Trainer comments
+Include basic weekly grouping (e.g., “This Week”, “Last Week” or grouped by week start date).
+This is a review timeline, not reminders.
+
+Trainer Review & Comment
+TRAINER can:
+
+Open a submission detail
+
+Add a comment tied to that submission
+OWNER can:
+
+View trainer comments
+
+API Routes (Next.js route handlers)
+
+Implement simple REST endpoints with basic validation:
+
+GET/POST /api/pets
+
+GET/POST /api/tasks (filter by petId)
+
+GET/POST /api/submissions (filter by taskId or petId)
+
+GET /api/submissions/[id]
+
+POST /api/submissions/[id]/comment
+
+POST /api/upload (accept multipart form data, save file, return filePath + mediaType)
+
+UI Requirements
+
+Clean, minimal, mobile-first layout using Tailwind.
+
+Use cards and stacked layouts for mobile.
+
+Basic loading and error states.
+
+Avoid complex state management; keep it simple.
+
+Deliverable (must be working)
+
+I must be able to:
+
+Sign in as trainer or owner
+
+Set role on first login
+
+Owner creates pet and assigns trainer email
+
+Trainer creates homework task for pet
+
+Owner submits completion with note + optional media
+
+Trainer reviews timeline and comments on a submission
+
+Owner sees trainer comment
+
+README
+
+Include README.md with:
+
+env vars: DATABASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, NEXTAUTH_SECRET, NEXTAUTH_URL
+
+Prisma migration steps
+
+How to run the app
+
+Notes to Replit AI
+
+Prefer simple implementations over abstractions. Keep code readable and organized. Ensure the project builds and runs.

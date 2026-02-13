@@ -1,0 +1,112 @@
+I want to refactor the onboarding and role system of my current web application.
+
+Current state:
+
+Users login via Replit Secure authentication.
+
+After login, users manually select either Trainer or Owner.
+
+Owners manually enter trainer email to link to a trainer.
+
+Trainers wait for owners to connect manually.
+
+I want to overhaul this flow into a Trainer-first invite-based workspace model.
+
+New Requirements:
+
+Remove Role Selection Screen
+
+After login, the system should automatically determine onboarding path.
+
+There should be no manual Trainer/Owner selection.
+
+Workspace-Based Role Model
+
+Each authenticated user has an account.
+
+If the user logs in WITHOUT an invite token in the URL:
+→ Automatically create a new Trainer Workspace.
+→ User becomes the Trainer (workspace owner).
+→ Redirect to Trainer Profile setup screen.
+
+If the user logs in WITH a valid invite token:
+→ Automatically join the corresponding Trainer Workspace.
+→ Assign user role as Owner in that workspace.
+→ Redirect to Owner onboarding (Add Pet screen).
+
+Trainer Onboarding Flow
+
+After first login (no invite token):
+→ Show Trainer Profile Setup screen.
+Fields:
+
+Trainer Display Name (required)
+
+Business Name (optional)
+
+Profile Photo (optional)
+
+Short Bio (optional)
+
+After profile completion:
+→ Generate:
+- Unique Invite Link
+- QR Code based on invite link
+→ Redirect to Trainer Dashboard.
+→ If no owners exist, show:
+"No clients yet — invite your first owner."
+
+Owner Onboarding Flow
+
+Owner enters via invite link or QR.
+
+After login:
+→ Validate invite token.
+→ Automatically link owner to trainer workspace.
+→ Redirect to Add Pet screen.
+→ After pet creation, redirect to Owner Dashboard.
+
+Invite Token Logic
+
+Generate a unique invite token per trainer workspace.
+
+Invite link format:
+/join?token=UNIQUE_TOKEN
+
+Validate token before allowing owner onboarding.
+
+Prevent trainer from using their own invite link to join as owner.
+
+Database Changes (If Needed)
+
+Add Workspace table:
+workspace_id
+trainer_user_id
+invite_token
+
+Add WorkspaceMembers table:
+workspace_id
+user_id
+role (trainer / owner)
+
+Modify pet records to reference workspace_id instead of trainer email.
+
+Migration Plan
+
+Remove trainer-email linking logic.
+
+Maintain existing tasks, pets, submissions structure.
+
+Update linking to use workspace_id.
+
+Constraints:
+
+Do not change task logic.
+
+Do not change submission logic.
+
+Only refactor onboarding and linking logic.
+
+Keep current UI styling.
+
+Implement this in small steps and ensure no existing data is lost.
